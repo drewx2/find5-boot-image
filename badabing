@@ -1,0 +1,7 @@
+#cd ~/Development/Boot/ > romtools --ramdisk.gz 
+#cd ..
+adb reboot bootloader
+romtools -repack
+fastboot flash boot boot.img
+#fastboot flash recovery rom-image.img
+adb logcat
