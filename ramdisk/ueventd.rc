@@ -7,10 +7,6 @@
 /dev/urandom              0666   root       root
 /dev/ashmem               0666   root       root
 /dev/binder               0666   root       root
-
-# Anyone can read the logs, but if they're not in the "logs"
-# group, then they'll only see log entries for their UID.
-/dev/log/*                0666   root       log
 /dev/rtc0                 0666   system     system
 
 # HTC diag
@@ -20,9 +16,8 @@
 /dev/diag_arm9            0666   radio      radio
 /dev/diag_mdm             0666   radio      radio
 /dev/htcdiag              0666   radio      radio
-
-# the DIAG device node is not world writable/readable.
-/dev/diag                 0660   system     qcom_diag
+# the DIAG device node is world writable/readable.
+/dev/diag                 0666   root       root
 
 # the msm hw3d client device node is world writable/readable.
 /dev/msm_hw3dc            0666   root       root
@@ -32,9 +27,6 @@
 
 # gpu driver for adreno200 is globally accessible
 /dev/kgsl                 0666   root       root
-
-# kms driver for drm based gpu
-/dev/dri/*                0666   root       graphics
 /dev/kgsl-3d0             0666   root       root
 /dev/kgsl-2d0             0666   root       root
 /dev/kgsl-2d1             0666   root       root
@@ -45,15 +37,13 @@
 /dev/android_adb          0660   adb        adb
 /dev/android_adb_enable   0660   adb        adb
 /dev/ttyMSM0              0600   bluetooth  bluetooth
-/dev/uhid                 0660   system     net_bt_stack
-/dev/uinput               0660   system     net_bt_stack
 /dev/ttyHS0               0660   bluetooth  bluetooth
 /dev/ttyGS0               0660   system     system
 /dev/uinput               0660   system     bluetooth
 /dev/alarm                0664   system     radio
 /dev/tty0                 0660   root       system
 /dev/sdio_tty_ciq_00      0660   system     system
-/dev/graphics/*           0660   root       graphics
+/dev/graphics/*           0660   system     graphics
 /dev/msm_hw3dm            0660   system     graphics
 /dev/msm_rotator          0660   system     graphics
 /dev/input/*              0660   root       input
@@ -64,13 +54,13 @@
 /dev/pmem_smipool*        0660   system     camera
 /dev/pmem_adsp*           0660   system     audio
 /dev/pmem_camera*         0660   system     camera
-/dev/oncrpc/*             0660   root       system
+/dev/oncrpc/*             0660   root       qcom_oncrpc
 /dev/gss                  0660   gps        gps
 /dev/adsp/*               0660   system     audio
 /dev/snd/*                0660   system     audio
 /dev/gss                  0660   system     system
 /dev/mt9t013              0660   system     system
-/dev/msm_camera/*         0660   system     camera
+/dev/msm_camera/*         0660   system     system
 /dev/akm8976_daemon       0640   compass    system
 /dev/akm8976_aot          0640   compass    system
 /dev/akm8973_daemon       0640   compass    system
@@ -225,24 +215,31 @@
 #permissions for sensors
 /dev/msm_dsps             0660  system       system
 
-/sys/devices/system/cpu/cpufreq ondemand/boostfreq   0664    system  system
-/sys/devices/system/cpu/cpufreq ondemand/boostpulse  0664    system  system
-/sys/devices/system/cpu/cpufreq ondemand/boosttime   0664    system  system
-/sys/devices/system/cpu/cpufreq ondemand/sampling_rate   0664    system  system
-/sys/devices/system/cpu/cpufreq ondemand/io_is_busy      0664    system  system
-/sys/devices/system/cpu/cpufreq ondemand/down_differential   0664    system  system
-/sys/devices/system/cpu/cpufreq ondemand/powersave_bias  0664    system  system
-/sys/devices/system/cpu/cpufreq ondemand/sampling_down_factor    0664    system  system
-/sys/devices/system/cpu/cpufreq ondemand/up_threshold   0664    system  system
+# felica device file nodes
+/dev/felica            0666   felicaclient   felicaclient
+/dev/felica_pon        0666   felicaclient   felicaclient
+/dev/felica_cen        0666   felicalock     felicalock
+/dev/felica_rfs        0444   felicaclient   felicaclient
+/dev/felica_rws        0666   felicaclient   felicaclient
+/dev/felica_int        0444   felicaclient   felicaclient
+/dev/felica_int_poll   0400   felicaclient   felicaclient
+/dev/felica_uid        0222   felicaclient   felicaclient
 
-/sys/devices/system/cpu/cpufreq interactive/boostpulse  0664    system  system
-/sys/devices/system/cpu/cpufreq interactive/timer_rate  0664    system  system
-/sys/devices/system/cpu/cpufreq interactive/min_sample_rate 0664    system  system
-/sys/devices/system/cpu/cpufreq interactive/min_sample_time 0664    system  system
-/sys/devices/system/cpu/cpufreq interactive/hispeed_freq    0664    system  system
-/sys/devices/system/cpu/cpufreq interactive/go_hispeed_load 0664    system  system
-/sys/devices/system/cpu/cpufreq interactive/above_hispeed_delay 0664    system  system
+/sys/devices/system/cpu/cpufreq/ondemand/boostfreq   0664    system  system
+/sys/devices/system/cpu/cpufreq/ondemand/boostpulse  0664    system  system
+/sys/devices/system/cpu/cpufreq/ondemand/boosttime   0664    system  system
+/sys/devices/system/cpu/cpufreq/ondemand/sampling_rate   0664    system  system
+/sys/devices/system/cpu/cpufreq/ondemand/io_is_busy      0664    system  system
+/sys/devices/system/cpu/cpufreq/ondemand/down_differential   0664    system  system
+/sys/devices/system/cpu/cpufreq/ondemand/powersave_bias  0664    system  system
+/sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor    0664    system  system
 
+/sys/devices/system/cpu/cpufreq/interactive/boostpulse  0664    system  system
+/sys/devices/system/cpu/cpufreq/interactive/timer_rate  0664    system  system
+/sys/devices/system/cpu/cpufreq/interactive/min_sample_rate 0664    system  system
+/sys/devices/system/cpu/cpufreq/interactive/hispeed_freq    0664    system  system
+/sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load 0664    system  system
+/sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay 0664    system  system
 
 # for modem link
 /sys/module/serial/parameters/modem_enabled    0600    system  system
