@@ -20,6 +20,11 @@ on property:sys.usb.config=none
 # This should only be used during device bringup
 # and as a fallback if the USB manager fails to set a standard configuration
 on property:sys.usb.config=adb
+    write /sys/class/android_usb/android0/enable 0
+    write /sys/class/android_usb/android0/idVendor 22d9
+    write /sys/class/android_usb/android0/idProduct D002
+    write /sys/class/android_usb/android0/functions ${sys.usb.config}
+    write /sys/class/android_usb/android0/enable 1
     start adbd
     write /sys/class/android_usb/android0/f_adb/on 1
     setprop sys.usb.state ${sys.usb.config}
@@ -99,7 +104,7 @@ on property:sys.usb.config=mass_storage,diag,modem,modem_mdm,diag_mdm,rmnet
 # USB accessory configuration
 on property:sys.usb.config=accessory
 #    write /sys/class/android_usb/android0/enable 0
-#    write /sys/class/android_usb/android0/idVendor 0bb4
+#    write /sys/class/android_usb/android0/idVendor 22d9
 #    write /sys/class/android_usb/android0/idProduct 2d00
 #    write /sys/class/android_usb/android0/functions ${sys.usb.config}
 #    write /sys/class/android_usb/android0/enable 1
@@ -109,7 +114,7 @@ on property:sys.usb.config=accessory
 # USB accessory configuration, with adb
 on property:sys.usb.config=accessory,adb
 #    write /sys/class/android_usb/android0/enable 0
-#    write /sys/class/android_usb/android0/idVendor 0bb4
+#    write /sys/class/android_usb/android0/idVendor 22d9
 #    write /sys/class/android_usb/android0/idProduct 2d01
 #    write /sys/class/android_usb/android0/functions ${sys.usb.config}
 #    write /sys/class/android_usb/android0/enable 1
@@ -120,7 +125,7 @@ on property:sys.usb.config=accessory,adb
 # audio accessory configuration
 on property:sys.usb.config=audio_source
     write /sys/class/android_usb/android0/enable 0
-    write /sys/class/android_usb/android0/idVendor 0bb4
+    write /sys/class/android_usb/android0/idVendor 22d9
     write /sys/class/android_usb/android0/idProduct 2d02
     write /sys/class/android_usb/android0/functions ${sys.usb.config}
     write /sys/class/android_usb/android0/enable 1
@@ -129,7 +134,7 @@ on property:sys.usb.config=audio_source
 # audio accessory configuration, with adb
 on property:sys.usb.config=audio_source,adb
     write /sys/class/android_usb/android0/enable 0
-    write /sys/class/android_usb/android0/idVendor 0bb4
+    write /sys/class/android_usb/android0/idVendor 22d9
     write /sys/class/android_usb/android0/idProduct 2d03
     write /sys/class/android_usb/android0/functions ${sys.usb.config}
     write /sys/class/android_usb/android0/enable 1
@@ -139,7 +144,7 @@ on property:sys.usb.config=audio_source,adb
 # USB and audio accessory configuration
 on property:sys.usb.config=accessory,audio_source
     write /sys/class/android_usb/android0/enable 0
-    write /sys/class/android_usb/android0/idVendor 0bb4
+    write /sys/class/android_usb/android0/idVendor 22d9
     write /sys/class/android_usb/android0/idProduct 2d04
     write /sys/class/android_usb/android0/functions ${sys.usb.config}
     write /sys/class/android_usb/android0/enable 1
@@ -148,7 +153,7 @@ on property:sys.usb.config=accessory,audio_source
 # USB and audio accessory configuration, with adb
 on property:sys.usb.config=accessory,audio_source,adb
     write /sys/class/android_usb/android0/enable 0
-    write /sys/class/android_usb/android0/idVendor 0bb4
+    write /sys/class/android_usb/android0/idVendor 22d9
     write /sys/class/android_usb/android0/idProduct 2d05
     write /sys/class/android_usb/android0/functions ${sys.usb.config}
     write /sys/class/android_usb/android0/enable 1
@@ -539,4 +544,3 @@ on property:sys.usb.projector.enable=1
 
 on property:sys.usb.projector.enable=0
     write /sys/class/android_usb/f_projector/on 0
-
