@@ -35,7 +35,13 @@
 /dev/kgsl-2d0             0666   system     system
 /dev/kgsl-2d1             0666   system     system
 /dev/ion                  0664   system     system
-/dev/rtc0                 066   system     system
+/dev/gss                  0660   gps        gps
+/dev/pmem_audio           0660   system     audio
+/dev/msm_pcm_lp_dec       0660   system     audio
+/dev/msm_mvs              0660   system     audio
+/dev/msm_voicememo        0660   system     audio
+/dev/radio0               0644   fm_radio   fm_radio
+/dev/rtc0                 066    system     system
 /dev/smd0                 0660   system     system
 /dev/smd4                 0660   system     system
 /dev/smd7                 0660   bluetooth  bluetooth
@@ -76,6 +82,7 @@
 /dev/msm_vidc_enc_sec	  0660   system		audio
 /dev/msm_rotator          0664   system     system
 /dev/hw_random            0660   system     system
+/dev/qseecom              0660   system     drmrpc
 
 #sysfs properties
 /sys/devices/virtual/input/input*   enable      0660  root   input
@@ -106,6 +113,15 @@
 /dev/smd3                 0660   bluetooth  bluetooth
 /dev/smd2                 0660   bluetooth  bluetooth
 /dev/ttyHSL1              0660   system     system
+
+/dev/msm_preproc_ctl      0660  system       audio
+/dev/msm_fm               0660  system       audio
+/dev/msm_ac3              0660  system       audio
+/dev/msm_cad              0660  system       audio
+/dev/msm_rtac             0660  system       audio
+/dev/oncrpc/300000ba:00010000  0660   system     system
+#liuyan add for breath led
+/dev/SN3193             0660  system       system
 
 # USB peripheral
 /dev/bus/usb/*            0660  root         usb

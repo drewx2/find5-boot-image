@@ -363,10 +363,6 @@ on boot
 # Set this property so surfaceflinger is not started by system_init
     setprop system_init.startsurfaceflinger 0
 
-
-# Run sysinit
-    exec /system/bin/sysinit
-
     class_start core
     class_start main
 
@@ -375,15 +371,6 @@ on nonencrypted
 
 on charger
     class_start charger
-
-# add for saving power
-    start qcom-post-boot
-# end add
-
-# add for fix mdm bug, or mdm will reset repeatly    
-    start qcom-c_core-sh
-    start qcom-c_main-sh
-# end add 
 
 on property:vold.decrypt=trigger_reset_main
     class_reset main
@@ -441,11 +428,10 @@ service servicemanager /system/bin/servicemanager
     class core
     user system
     group system
-#    critical
+    critical
     onrestart restart zygote
     onrestart restart media
     onrestart restart surfaceflinger
-    onrestart restart sensorservice 
     onrestart restart drm
 
 service vold /system/bin/vold
@@ -475,11 +461,11 @@ service surfaceflinger /system/bin/surfaceflinger
     group graphics drmrpc
     onrestart restart zygote
 
-service sensorservice /system/bin/sensorservice
-    class main
-    user  root
+#service sensorservice /system/bin/sensorservice
+#    class main
+#    user  root
 
-service zygote /system/xbin/strace -tt -o/data/media/strace-cm10.1.txt /system/bin/app_process -Xzygote /system/bin --zygote --start-system-server
+service zygote /system/bin/app_process -Xzygote /system/bin --zygote --start-system-server
     class main
     socket zygote stream 660 root system
     onrestart write /sys/android_power/request_state wake
@@ -490,7 +476,7 @@ service zygote /system/xbin/strace -tt -o/data/media/strace-cm10.1.txt /system/b
 service drm /system/bin/drmserver
     class main
     user drm
-    group drm system inet drmrpc sdcard_r
+    group drm system inet drmrpc
 
 service media /system/bin/mediaserver
     class main
@@ -501,7 +487,7 @@ service media /system/bin/mediaserver
 service bootanim /system/bin/bootanimation
     class main
     user graphics
-    group system audio graphics
+    group graphics
     disabled
     oneshot
 
@@ -510,15 +496,6 @@ service bootanim /system/bin/bootanimation
 #    socket dbus stream 660 bluetooth bluetooth
 #    user bluetooth
 #    group bluetooth net_bt_admin
-
-service bluetoothd /system/bin/bluetoothd -n
-    class main
-    socket bluetooth stream 660 bluetooth bluetooth
-    socket dbus_bluetooth stream 660 bluetooth bluetooth
-    # init.rc does not yet support applying capabilities, so run as root and
-    # let bluetoothd drop uid to bluetooth with the right linux capabilities
-    group bluetooth net_bt_admin misc
-    disabled
 
 service installd /system/bin/installd
     class main

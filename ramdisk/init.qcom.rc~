@@ -63,9 +63,7 @@ on fs
 	mount vfat /dev/block/mmcblk0p1 /firmware wait ro shortname=lower,uid=1000,gid=1000,dmask=227,fmask=337
     write /data/d2complete 1
 
-   # we will remap this as /mnt/sdcard with the sdcard fuse tool
-#   chown media_rw media_rw /data/media
-   setprop ro.crypto.fuse_sdcard true
+	setprop ro.crypto.fuse_sdcard true
 
 on boot
     exec system/bin/btnvtool -O
@@ -139,7 +137,6 @@ on boot
     #Remove SUID bit for iproute2 ip tool
     chmod 0755 /system/bin/ip
 
-
     chmod 0444 /sys/devices/platform/msm_hsusb/gadget/usb_state
 
     # create symlink for fb1 as HDMI
@@ -161,6 +158,17 @@ on boot
 
     #For bridgemgr daemon to inform the USB driver of the correct transport
     chown radio radio /sys/class/android_usb/f_rmnet_smd_sdio/transport
+
+    chown system system /sys/devices/i2c-4/4-0030/test_flash
+    chown system system /sys/devices/i2c-4/4-0030/torch_control
+
+	#ifdef VENDOR_EDIT
+	#zhengzk add on 2013-01-16 for camera display bluescreen
+	write /sys/module/msm_rtb/parameters/filter 32
+	#endif /* VENDOR_EDIT */
+
+	#add by chendx for charging settings 2012-10-30
+    chown system system /sys/bus/platform/devices/pm8921-charger/pm8921_chg
 
     #To allow interfaces to get v6 address when tethering is enabled
     write /proc/sys/net/ipv6/conf/rmnet0/accept_ra 2
@@ -238,6 +246,10 @@ on post-fs-data
     chown system system /sys/devices/platform/msm_sdcc.3/polling
     chown system system /sys/devices/platform/msm_sdcc.4/polling
 
+    # USB service
+    mkdir /dev/bus/ 755 root root
+    mkdir /dev/bus/usb 755 root root
+
     # Chown liblights
     chown system system /sys/class/leds/green/brightness
     chown system system /sys/class/leds/green/blink
@@ -285,6 +297,10 @@ on post-fs-data
     mkdir /data/audio/ 0770 media audio
     # Enable the setgid bit on the directory
     chmod 2770 /data/audio
+
+    # VENDOR_EDIT
+    chmod 0660 /dev/block/mmcblk0p26
+    chown root system /dev/block/mmcblk0p26
 
     setprop ro.product.wireless WCN3660
     write /dev/wcnss_wlan 1

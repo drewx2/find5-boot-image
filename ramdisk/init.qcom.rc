@@ -63,9 +63,7 @@ on fs
 	mount vfat /dev/block/mmcblk0p1 /firmware wait ro shortname=lower,uid=1000,gid=1000,dmask=227,fmask=337
     write /data/d2complete 1
 
-   # we will remap this as /mnt/sdcard with the sdcard fuse tool
-#   chown media_rw media_rw /data/media
-   setprop ro.crypto.fuse_sdcard true
+	setprop ro.crypto.fuse_sdcard true
 
 on boot
     exec system/bin/btnvtool -O
@@ -248,6 +246,10 @@ on post-fs-data
     chown system system /sys/devices/platform/msm_sdcc.3/polling
     chown system system /sys/devices/platform/msm_sdcc.4/polling
 
+    # USB service
+    mkdir /dev/bus/ 755 root root
+    mkdir /dev/bus/usb 755 root root
+
     # Chown liblights
     chown system system /sys/class/leds/green/brightness
     chown system system /sys/class/leds/green/blink
@@ -261,6 +263,7 @@ on post-fs-data
     #Create the symlink to qcn wpa_supplicant folder for ar6000 wpa_supplicant
     mkdir /data/system 0775 system system
     symlink /data/misc/wifi/wpa_supplicant /data/system/wpa_supplicant
+	symlink /data/misc/wifi/wpa_supplicant.conf /etc/wifi/supplicant.conf
   	symlink /dev/socket/wpa_wlan0 /data/system/wpa_supplicant/wlan0
 
     #Create directories for wiper services
