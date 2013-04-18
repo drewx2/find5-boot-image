@@ -3,11 +3,10 @@
 #
 ro.adb.secure=0
 ro.secure=0
-ro.allow.mock.location=0
-ro.debuggable=1
-#persist.service.adb.enable=1
-service.adb.root=1
-persist.sys.usb.config=adb
+persist.ro.debuggable=1
+persist.service.adb.enable=1
+#service.adb.root=1
+persist.sys.usb.config=mass_storage,adb
 ro.hdmi.enable=true
 
 

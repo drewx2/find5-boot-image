@@ -25,6 +25,8 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+/dev/pn544          	  0660   nfc		system
+
 # the DIAG device node is not world writable/readable.
 /dev/diag                 0660   system     qcom_diag
 
@@ -41,7 +43,7 @@
 /dev/msm_mvs              0660   system     audio
 /dev/msm_voicememo        0660   system     audio
 /dev/radio0               0644   fm_radio   fm_radio
-/dev/rtc0                 066    system     system
+/dev/rtc0                 0660   system     system
 /dev/smd0                 0660   system     system
 /dev/smd4                 0660   system     system
 /dev/smd7                 0660   bluetooth  bluetooth
