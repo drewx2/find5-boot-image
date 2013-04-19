@@ -5,7 +5,6 @@ ro.adb.secure=0
 ro.secure=0
 persist.ro.debuggable=1
 persist.service.adb.enable=1
-#service.adb.root=1
 persist.sys.usb.config=mass_storage,adb
 ro.hdmi.enable=true
 

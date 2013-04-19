@@ -236,12 +236,7 @@ on post-fs-data
     mkdir /data/misc/dhcp 0770 dhcp dhcp
     chown dhcp dhcp /data/misc/dhcp
 
-    write /dev/wcnss_wlan 1
     write /sys/module/wcnss_ssr_8960/parameters/enable_riva_ssr 1
-
-    # Workaround for conn_init not copying the updated firmware
-#    rm /data/misc/wifi/WCNSS_qcom_cfg.ini
-#    rm /data/misc/wifi/WCNSS_qcom_wlan_nv.bin
 
     # Create directory used by audio subsystem
     mkdir /data/misc/audio 0770 audio audio
@@ -312,9 +307,6 @@ on post-fs-data
     chmod 0660 /dev/block/mmcblk0p26
     chown root system /dev/block/mmcblk0p26
 
-#    setprop ro.product.wireless WCN3660
-#    write /dev/wcnss_wlan 1
-
     setprop vold.post_fs_data_done 1
 
 # Export GPIO56 for fusion targets to enable/disable hub
@@ -325,7 +317,7 @@ service usbhub_init /system/bin/usbhub_init
 
 on property:init.svc.surfaceflinger=stopped
 #    stop ppd
-#    stop hdmid
+    stop hdmid
 
 on property:ro.board.platform=msm7630_fusion
     start usbhub_init
@@ -336,12 +328,6 @@ on property:init.svc.wpa_supplicant=stopped
 on property:bluetooth.isEnabled=true
     start btwlancoex
     write /sys/class/bluetooth/hci0/idle_timeout 7000
-
-#service conn_init /system/bin/logwrapper /system/bin/conn_init
-#	class late_start
-#	user system
-#	group system wifi
-#	oneshot
 
 service qcom-c_core-sh /system/bin/sh /init.qcom.class_core.sh
     class core
