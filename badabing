@@ -14,3 +14,4 @@ echo "Flashing BOOT with BOOT.IMG"
 fastboot flash boot boot.img
 echo "Starting ADB LOGCAT"
 fastboot reboot
+adb logcat
