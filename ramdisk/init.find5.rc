@@ -1,34 +1,23 @@
-# Copyright (c) 2009-2012, Code Aurora Forum. All rights reserved.
 #
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#     * Redistributions of source code must retain the above copyright
-#       notice, this list of conditions and the following disclaimer.
-#     * Redistributions in binary form must reproduce the above copyright
-#       notice, this list of conditions and the following disclaimer in the
-#       documentation and/or other materials provided with the distribution.
-#     * Neither the name of Code Aurora nor
-#       the names of its contributors may be used to endorse or promote
-#       products derived from this software without specific prior written
-#       permission.
+# Copyright 2012 The Android Open Source Project
 #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-# NON-INFRINGEMENT ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
-# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
-# OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
-# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 import init.oppo.usb.rc
 import init.target.rc
 
 on early-init
-	mount_all fstab.find5
     mount debugfs debugfs /sys/kernel/debug
 
 on init
@@ -46,12 +35,23 @@ on init
     symlink /storage/emulated/legacy /storage/sdcard0
     symlink /mnt/shell/emulated/0 /storage/emulated/legacy
 
+	# Create directory for "external" sdcard
+	mkdir /storage/sdcard1
+
+on init
     # Set permissions for persist partition
     mkdir /persist 0771 system system
     mkdir /firmware 0771 system system
 
-	# Create directory for "external" sdcard
-	mkdir /storage/sdcard1
+on init
+    # Setup custom emergency number list based on
+    # the MCC. This is needed by RIL.
+    setprop persist.radio.custom_ecc "1"
+    setprop persist.radio.custom_ecc_mcc "{234,235,424,426,427,430,431:999},{334:060,066},{422:9999},{730:133}"
+    setprop persist.radio.custom_ecc_mcc_ex "{450:111,112,113,119,122,125,127},{724:190}"
+    setprop persist.radio.custom_ecc_voice "{515:117},{452:113,114,115}"
+    setprop persist.radio.custom_ecc_hard "911,*911,#911,112,999,000,08,118,120,122,110,119,995,111,113,125,127,133"
+
 
 on early-boot
     # set RLIMIT_MEMLOCK to 64MB
@@ -60,13 +60,13 @@ on early-boot
 on fs
 	mkdir /system
 	mkdir /data 0771 system system
-#	
+	mount_all fstab.find5
 
 	#mount ext4 /dev/block/platform/msm_sdcc.1/by-name/system /system wait ro barrier=1
 	#mount ext4 /dev/block/platform/msm_sdcc.1/by-name/userdata /data wait rw nosuid nodev barrier=1 noauto_da_alloc
     mount ext4 /dev/block/platform/msm_sdcc.1/by-name/cache /cache nosuid nodev barrier=1
     mount ext4 /dev/block/platform/msm_sdcc.1/by-name/persist /persist nosuid nodev barrier=1
-	mount vfat /dev/block/platform/msm_sdcc.1/by-name/modem /firmware wait ro shortname=lower,uid=1000,gid=1000,dmask=227,fmask=337
+	mount vfat /dev/block/mmcblk0p1 /firmware wait ro shortname=lower,uid=1000,gid=1000,dmask=227,fmask=337
     write /data/d2complete 1
 
 	setprop ro.crypto.fuse_sdcard true
@@ -139,19 +139,14 @@ on boot
     # create symlink for fb1 as HDMI
     symlink /dev/graphics/fb1 /dev/graphics/hdmi
 
-    # flashlight
-    chown system camera /sys/class/leds/spotlight/brightness
-   	chmod 0666 /sys/class/leds/flashlight/brightness
-	# symlink /sys/class/leds/spotlight /sys/class/leds/flashlight  # mental note to rewrite #
-
-    # setup permissions for fb1 related nodes
-    chown system graphics /sys/class/graphics/fb1/hpd
+    # Remove write permissions to video related nodes
     chmod 0664 /sys/devices/virtual/graphics/fb1/hpd
     chmod 0664 /sys/devices/virtual/graphics/fb1/video_mode
     chmod 0664 /sys/devices/virtual/graphics/fb1/format_3d
 
     # Change owner and group for media server and surface flinger
     chown system system /sys/devices/virtual/graphics/fb1/format_3d
+    chown system system /sys/devices/virtual/graphics/fb1/hpd
 
     #For bridgemgr daemon to inform the USB driver of the correct transport
     chown radio radio /sys/class/android_usb/f_rmnet_smd_sdio/transport
@@ -166,6 +161,9 @@ on boot
 
 	#add by chendx for charging settings 2012-10-30
     chown system system /sys/bus/platform/devices/pm8921-charger/pm8921_chg
+
+    # Enable DEBUG_SUSPEND, DEBUG_EXIT_SUSPEND, and DEBUG_WAKEUP
+    write /sys/module/wakelock/parameters/debug_mask 7
 
     #To allow interfaces to get v6 address when tethering is enabled
     write /proc/sys/net/ipv6/conf/rmnet0/accept_ra 2
@@ -284,8 +282,8 @@ on post-fs-data
     # Create /data/time folder for time-services
     mkdir /data/time/ 0700 system system
 
-    mkdir /data/audio/ 0770 media audio
     # Enable the setgid bit on the directory
+    mkdir /data/audio 0770 media audio
     chmod 2770 /data/audio
 
     # VENDOR_EDIT
@@ -294,15 +292,20 @@ on post-fs-data
 
     setprop vold.post_fs_data_done 1
 
+
+    rm /data/local/tmp/adreno_config.txt
+
+    # LED On/Off synchronization
+    chown system system /sys/class/leds/red/device/lock
+
+on property:init.svc.surfaceflinger=stopped
+    stop hdmid
+
 # Export GPIO56 for fusion targets to enable/disable hub
 service usbhub_init /system/bin/usbhub_init
    user root
    disabled
    oneshot
-
-on property:init.svc.surfaceflinger=stopped
-#    stop ppd
-    stop hdmid
 
 on property:ro.board.platform=msm7630_fusion
     start usbhub_init
