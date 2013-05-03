@@ -1,3 +1,0 @@
-rm adb.log
-adb reboot
-adb logcat > adb.log 
