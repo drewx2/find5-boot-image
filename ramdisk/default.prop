@@ -1,0 +1,16 @@
+#
+# ADDITIONAL_DEFAULT_PROPERTIES
+#
+ro.adb.secure=0
+ro.secure=0
+ro.debuggable=1
+service.adb.enable=1
+sys.usb.config=mass_storage,adb
+ro.hdmi.enable=true
+persist.radio.apm_sim_not_pwdn=1
+ro.qc.sensors.wl_dis=true
+media.aac_51_output_enabled=true
+ro.hwui.text_cache_width=2048
+media.stagefright.enable-http=true
+media.stagefright.enable-aac=true
+af.resampler.quality=4
